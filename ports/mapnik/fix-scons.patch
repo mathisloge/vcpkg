@@ -1,0 +1,13 @@
+diff --git a/SConstruct b/SConstruct
+index a2c8439..9a17a00 100644
+--- a/SConstruct
++++ b/SConstruct
+@@ -1608,7 +1608,7 @@ if not preconfigured:
+     if not env['HOST'] and not conf.supports_cxx_std():
+         color_print(1,"C++ compiler does not support C++%s standard (-std=c++%s), which is required."
+                       " Please upgrade your compiler" % (env['CXX_STD'], env['CXX_STD']))
+-        Exit(1)
++        # Exit(1)
+ 
+     if not env['HOST']:
+         for libname, headers, required, lang in REQUIRED_LIBSHEADERS:

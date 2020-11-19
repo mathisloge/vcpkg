@@ -1,4 +1,5 @@
 vcpkg_fail_port_install(ON_LIBRARY_LINKAGE "static")
+
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO mapnik/mapnik
@@ -8,7 +9,59 @@ vcpkg_from_github(
     PATCHES
       fix-box2d.patch
       fix-constructor-inheritance.patch
+      fix-scons.patch
 )
+
+if (VCPKG_LIBRARY_LINKAGE STREQUAL dynamic)
+  set(MAPNIK_LINKING "shared")
+elseif (VCPKG_LIBRARY_LINKAGE STREQUAL static)
+  set(MAPNIK_LINKING "static")
+endif()
+
+vcpkg_find_acquire_program(SCONS)
+
+
+file(COPY ${CMAKE_CURRENT_LIST_DIR}/cmake_scons/ DESTINATION ${SOURCE_PATH})
+
+#vcpkg_execute_required_process(
+#  COMMAND ${SCONS} --help 
+#  WORKING_DIRECTORY ${SOURCE_PATH}
+#)
+list(GET SCONS 0 PYTHON_EXE)
+list(GET SCONS 1 SCONS_EXE)
+vcpkg_configure_cmake(
+    SOURCE_PATH ${SOURCE_PATH}
+    PREFER_NINJA
+    OPTIONS   
+        ${FEATURE_OPTIONS}
+        -DPYTHON_INT="${PYTHON_EXE}"
+        -DSCONS_SC="${SCONS_EXE}"
+        -DMAPNIK_LINKING=${MAPNIK_LINKING}
+        -DBOOST_PREFIX=${CURRENT_INSTALLED_DIR}/include
+        -DFREE_TYPE_INCLUDE=${CURRENT_INSTALLED_DIR}/include/freetype2
+)
+
+
+vcpkg_build_cmake(TARGET scons_configure)
+
+
+return()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 file(COPY ${CMAKE_CURRENT_LIST_DIR}/cmake/ DESTINATION ${SOURCE_PATH})
 
