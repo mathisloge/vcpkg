@@ -3,9 +3,10 @@ vcpkg_buildpath_length_warning(37)
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO aws/aws-sdk-cpp
-    REF 934ed5c02bc6afdd24de23a44429dfd2bc63d081 # 1.7.333
-    SHA512 e8fa1cdb365f07a28240deca824c0b003072a5d8fe237131d2c35a4b8e37abd67cc11e015fe01a0145e30a387aa8aa9528eb98262b802442ef08750e7c1636de
+    REF e98e5732ec7319051f162f7314ae361c85d0a8c9 # 1.8.83
+    SHA512 da540db60551be833ea0315dd93241f9740ab953ed5657c1c7a8c401ae52a4e75b116758420b0a8a4ebb79358dff8377f5e052b180b36f0af27a36003f28bd56
     HEAD_REF master
+    PATCHES patch-relocatable-rpath.patch
 )
 
 string(COMPARE EQUAL "${VCPKG_CRT_LINKAGE}" "dynamic" FORCE_SHARED_CRT)
@@ -14,8 +15,13 @@ set(BUILD_ONLY core)
 
 include(${CMAKE_CURRENT_LIST_DIR}/compute_build_only.cmake)
 
-string(REPLACE ";" "\\\\\\\\\\\;" BUILD_ONLY "${BUILD_ONLY}")
+string(REPLACE ";" "\\\\\\\\\\;" BUILD_ONLY "${BUILD_ONLY}")
 
+if(VCPKG_TARGET_IS_OSX OR VCPKG_TARGET_IS_IOS)
+    set(rpath "@loader_path")
+else()
+    set(rpath "\$ORIGIN")
+endif()
 vcpkg_configure_cmake(
     SOURCE_PATH ${SOURCE_PATH}
     DISABLE_PARALLEL_CONFIGURE
@@ -25,8 +31,9 @@ vcpkg_configure_cmake(
         -DENABLE_TESTING=OFF
         -DFORCE_SHARED_CRT=${FORCE_SHARED_CRT}
         -DCMAKE_DISABLE_FIND_PACKAGE_Git=TRUE
-        "-DBUILD_ONLY=${BUILD_ONLY}"
+        -DBUILD_ONLY=${BUILD_ONLY}
         -DBUILD_DEPS=OFF
+        -DCMAKE_INSTALL_RPATH=${rpath}
 )
 
 vcpkg_install_cmake()

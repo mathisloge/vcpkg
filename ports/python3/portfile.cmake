@@ -4,16 +4,26 @@ if (VCPKG_LIBRARY_LINKAGE STREQUAL dynamic AND VCPKG_CRT_LINKAGE STREQUAL static
 endif()
 
 set(PYTHON_VERSION_MAJOR  3)
-set(PYTHON_VERSION_MINOR  7)
-set(PYTHON_VERSION_PATCH  3)
+set(PYTHON_VERSION_MINOR  9)
+set(PYTHON_VERSION_PATCH  0)
 set(PYTHON_VERSION        ${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}.${PYTHON_VERSION_PATCH})
+
+if(VCPKG_TARGET_IS_WINDOWS)
+	if(VCPKG_LIBRARY_LINKAGE STREQUAL static)
+		list(APPEND PATCHES ${CMAKE_CURRENT_LIST_DIR}/0001-static-library.patch)
+	endif()
+	if (VCPKG_CRT_LINKAGE STREQUAL static)
+		list(APPEND PATCHES ${CMAKE_CURRENT_LIST_DIR}/0002-static-crt.patch)
+	endif()
+endif()
 
 vcpkg_from_github(
     OUT_SOURCE_PATH TEMP_SOURCE_PATH
     REPO python/cpython
     REF v${PYTHON_VERSION}
-    SHA512 023960a2f570fe7178d3901df0c3c33346466906b6d55c73ef7947c19619dbab62efc42c7262a0539bc5e31543b1113eb7a088d4615ad7557a0707bdaca27940
+    SHA512 39d304cae181674c4872c63768c0e5aeace2c92eb6d5ea550428d65c8571bc60922b3a3d484b51c46b466aadb7e27500559cafec13a489b48613bbb3fe6a5a5d
     HEAD_REF master
+    PATCHES ${PATCHES}
 )
 
 if("enable-shared" IN_LIST FEATURES)
@@ -33,9 +43,6 @@ if (VCPKG_TARGET_IS_WINDOWS)
 	file(REMOVE_RECURSE ${SOURCE_PATH})
 	file(RENAME "${TEMP_SOURCE_PATH}" ${SOURCE_PATH})
 
-	# We need per-triplet directories because we need to patch the project files differently based on the linkage
-	# Because the patches patch the same file, they have to be applied in the correct order
-
 	if (VCPKG_TARGET_ARCHITECTURE MATCHES "x86")
 		set(BUILD_ARCH "Win32")
 		set(OUT_DIR "win32")
@@ -50,12 +57,11 @@ if (VCPKG_TARGET_IS_WINDOWS)
 		PROJECT_PATH ${SOURCE_PATH}/PCBuild/pythoncore.vcxproj
 		PLATFORM ${BUILD_ARCH})
 
-	file(GLOB HEADERS ${SOURCE_PATH}/Include/*.h)
 	file(INSTALL
-			${HEADERS}
+			"${SOURCE_PATH}/Include/"
 			"${SOURCE_PATH}/PC/pyconfig.h"
-		DESTINATION
-			"${CURRENT_PACKAGES_DIR}/include/python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}"
+		DESTINATION "${CURRENT_PACKAGES_DIR}/include/python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}"
+		FILES_MATCHING PATTERN *.h
 	)
 	file(INSTALL
 			"${SOURCE_PATH}/Lib"
@@ -149,31 +155,32 @@ elseif (VCPKG_TARGET_IS_LINUX OR VCPKG_TARGET_IS_OSX)
 		)
 
 		message(STATUS "Installing ${TARGET_TRIPLET}-rel headers...")
-		file(GLOB HEADERS
-			${OUT_PATH_RELEASE}/include/*)
-		file(INSTALL ${HEADERS} DESTINATION ${CURRENT_PACKAGES_DIR}/include
-			PATTERN "*__pycache__*" EXCLUDE
+		file(INSTALL "${OUT_PATH_RELEASE}/include/"
+			DESTINATION ${CURRENT_PACKAGES_DIR}/include
+			FILES_MATCHING PATTERN *.h
 		)
 
 		message(STATUS "Installing ${TARGET_TRIPLET}-rel lib files...")
-		file(GLOB LIBS
+		file(GLOB PY_LIBS
 			${OUT_PATH_RELEASE}/lib/python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}/*)
-		file(INSTALL ${LIBS} DESTINATION ${CURRENT_PACKAGES_DIR}/share/python${PYTHON_VERSION_MAJOR}/Lib
+		file(INSTALL ${PY_LIBS} DESTINATION ${CURRENT_PACKAGES_DIR}/share/python${PYTHON_VERSION_MAJOR}/Lib
 			PATTERN "*.pyc" EXCLUDE
 			PATTERN "*__pycache__*" EXCLUDE
 		)
 
 		message(STATUS "Installing ${TARGET_TRIPLET}-rel share files...")
-		file(GLOB LIBS
-			${OUT_PATH_RELEASE}/lib/pkgconfig/*)
-		file(INSTALL ${LIBS} DESTINATION ${CURRENT_PACKAGES_DIR}/share/python${PYTHON_VERSION_MAJOR}
+		file(GLOB PKGCFG ${OUT_PATH_RELEASE}/lib/pkgconfig/*)
+		file(INSTALL ${PKGCFG} DESTINATION ${CURRENT_PACKAGES_DIR}/share/python${PYTHON_VERSION_MAJOR}
 			PATTERN "*.pyc" EXCLUDE
 			PATTERN "*__pycache__*" EXCLUDE
 		)
 
 		message(STATUS "Installing ${TARGET_TRIPLET}-rel Python library files...")
 		file(GLOB LIBS
-			${OUT_PATH_RELEASE}/lib/libpython${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}m.*)
+			${OUT_PATH_RELEASE}/lib/libpython${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}.*)
+        if (NOT LIBS)
+            file(GLOB LIBS ${OUT_PATH_RELEASE}/lib64/*)
+        endif()
 		file(INSTALL ${LIBS} DESTINATION ${CURRENT_PACKAGES_DIR}/lib
 			PATTERN "*.pyc" EXCLUDE
 			PATTERN "*__pycache__*" EXCLUDE
@@ -227,7 +234,11 @@ elseif (VCPKG_TARGET_IS_LINUX OR VCPKG_TARGET_IS_OSX)
 
 		message(STATUS "Installing ${TARGET_TRIPLET}-dbg Python library files...")
 		file(GLOB LIBS
-			${OUT_PATH_DEBUG}/lib/libpython${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}dm.*)
+			${OUT_PATH_DEBUG}/lib/libpython${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}d.*)
+        if (NOT LIBS)
+            file(GLOB LIBS
+                ${OUT_PATH_DEBUG}/lib64/*)
+        endif()
 		file(INSTALL ${LIBS} DESTINATION ${CURRENT_PACKAGES_DIR}/debug/lib
 			PATTERN "*.pyc" EXCLUDE
 			PATTERN "*__pycache__*" EXCLUDE

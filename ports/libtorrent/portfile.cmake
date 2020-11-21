@@ -6,9 +6,7 @@ if(VCPKG_TARGET_IS_WINDOWS)
         message(FATAL_ERROR "The python feature is currently broken on Windows")
     endif()
 
-    if("iconv" IN_LIST FEATURES)
-        set(ICONV_PATCH "fix_find_iconv.patch")
-    else()
+    if(NOT "iconv" IN_LIST FEATURES)
         # prevent picking up libiconv if it happens to already be installed
         set(ICONV_PATCH "no_use_iconv.patch")
     endif()
@@ -39,8 +37,8 @@ endif()
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO arvidn/libtorrent
-    REF 8b42b0413a8ff6768fd15ee91eb9656f31f27bea # based on libtorrent-1.2.6 plus fixes from RC_1_2 branch
-    SHA512 6dd4d60b1f13cfa07af60c553ebf1085c5306e1788c87e53a8320bf7041bc7f66aaea57c16d09468742b9bda958b5f203d08f27086c98b7f296ab429d0df20d9
+    REF libtorrent-1.2.10
+    SHA512 e6de939fb6527783695e0b6623ddbe27f85842a36c0899b93ea0284cb3c6f3d14b8c39e29316adb3bf9acac7804f38385cc06854a32df28e7f4f6839af9f382d
     HEAD_REF RC_1_2
     PATCHES
         add-datetime-to-boost-libs.patch
