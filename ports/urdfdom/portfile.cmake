@@ -3,7 +3,7 @@ vcpkg_check_linkage(ONLY_DYNAMIC_LIBRARY)
 vcpkg_from_github(
   OUT_SOURCE_PATH SOURCE_PATH
   REPO ros/urdfdom
-  REF 3.0.0
+  REF 3.0.1
   SHA512 1fa3372d5beed6b119444ef99d50991a417d42bc7a3152e4697dc26e1bd1e351d45edd4c56f9dfff6f2c8480b3f43c6dfe246d22890db0f676d68591a5c0aaf6
   HEAD_REF master
 )
