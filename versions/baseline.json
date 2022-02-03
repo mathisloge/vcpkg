@@ -7069,7 +7069,7 @@
       "port-version": 0
     },
     "urdfdom": {
-      "baseline": "3.0.0",
+      "baseline": "3.0.1",
       "port-version": 0
     },
     "urdfdom-headers": {
