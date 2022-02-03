@@ -29,6 +29,9 @@ set(ENV{PYTHON} "${PYTHON3}")
 if(VCPKG_TARGET_IS_WINDOWS)
     list(APPEND CONFIGURE_OPTIONS --enable-icu-build-win)
 endif()
+if(VCPKG_LIBRARY_LINKAGE STREQUAL "static")
+    list(APPEND CONFIGURE_OPTIONS --with-data-packaging)
+endif()
 
 list(APPEND CONFIGURE_OPTIONS --disable-samples --disable-tests --disable-layoutex)
 
