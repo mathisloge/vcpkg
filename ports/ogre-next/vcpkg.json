@@ -26,6 +26,15 @@
     }
   ],
   "features": {
+    "vulkan": {
+      "description": "Vulkan render system",
+      "dependencies": [
+        "vulkan"
+      ]
+    },
+    "d3d11": {
+      "description": "d3d11 render system"
+    },
     "plugin-pfx": {
       "description": "Build ParticleFX plugin"
     },

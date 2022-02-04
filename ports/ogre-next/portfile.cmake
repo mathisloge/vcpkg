@@ -9,8 +9,8 @@ endif()
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO OGRECave/ogre-next
-    REF v2.3.0
-    SHA512 90c502f8fdabb40069fc8347769f0ca110942d0291ba6b33678449bfef953a55c42e84c748e37ff74af7babf498d71a7c464e6a435ab11889345950b9d65632e
+    REF f8f59465a55d7cb812b8a568b913dad77890ef4a
+    SHA512 97f7b486349cb52b36902af19ca371ddbf9112b9d3bed8312387bbef4245cb97d6e3d445b6b8403e9fddaa97ebcc9e080af4b1a32e5267bcb10c2a83c7e9acf9
     HEAD_REF master
     PATCHES 
         cmake-dir.patch
@@ -25,6 +25,8 @@ endif()
 
 vcpkg_check_features(OUT_FEATURE_OPTIONS FEATURE_OPTIONS
     FEATURES
+        "vulkan"                OGRE_BUILD_RENDERSYSTEM_VULKAN
+        "d3d11"                 OGRE_BUILD_RENDERSYSTEM_D3D11 
         "plugin-pfx"            OGRE_BUILD_PLUGIN_PFX
         "mesh-lod-generator"    OGRE_BUILD_COMPONENT_MESHLODGENERATOR
         "planar-reflections"    OGRE_BUILD_COMPONENT_PLANAR_REFLECTIONS
