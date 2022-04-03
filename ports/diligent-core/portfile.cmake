@@ -1,8 +1,8 @@
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO mathisloge/DiligentCore
-    REF c2f68118a3f64e069ffbc15c7ad9d64fb96d5454
-    SHA512 a7b51d396d968b5eb4cec0a58a4e5e2b1c1a623d86a5b553a0987c13759c17870d049b9afbfbb9d029d605d5fbb5dd26f435b4ea6bbd5866cd086bd777726dd9
+    REF 4492b99b76b0f86812333ef08d7447f55fbf5030
+    SHA512 c1852052ade77d97876cdcc560b9c46c4efb54e84f16fe22b3828de4fe7975f78be3a5247f574210af5ddc72a56bfcaebd2d274bc4360173fde850373bb447ce
     HEAD_REF vcpkg
 )
 
@@ -17,5 +17,6 @@ vcpkg_cmake_configure(
 )
 
 vcpkg_cmake_install()
+vcpkg_cmake_config_fixup(CONFIG_PATH lib/cmake/DiligentCore)
 
 file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/include")
