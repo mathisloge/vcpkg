@@ -1,0 +1,23 @@
+{
+    "name": "diligent-core",
+    "version-string": "0.0.1",
+    "dependencies": [
+        "volk",
+        "vulkan-headers",
+        "spirv-tools",
+        "spirv-cross",
+        "spirv-headers",
+        "glew",
+        "glslang",
+        "xxhash",
+        "gtest",
+        {
+            "name": "vcpkg-cmake",
+            "host": true
+        },
+        {
+            "name": "vcpkg-cmake-config",
+            "host": true
+        }
+    ]
+}
