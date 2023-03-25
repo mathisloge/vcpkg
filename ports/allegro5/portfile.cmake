@@ -1,15 +1,12 @@
 vcpkg_from_github(
     OUT_SOURCE_PATH SOURCE_PATH
     REPO liballeg/allegro5
-    REF 5.2.6.0
-    SHA512 d590c1a00d1b314c6946e0f6ad3e3a8b6e6309bada2ec38857186f817147ac99dae8a1c4412abe701af88da5dca3dd8f989a1da66630192643d3c08c0146b603
+    REF 5.2.8.0
+    SHA512 83e89426e11479a9b035034c2d778a95d13dcc9fc6d4e4eae1c522b74736f11f5e40513ca38018ae6b2a4fdcdf9089b46740171a26f7e202f81e58efdbcdaff5
     HEAD_REF master
     PATCHES
         do-not-copy-pdbs-to-lib.patch
-        export-targets.patch
-        msvc-arm64-atomic.patch
 )
-
 
 string(COMPARE EQUAL "${VCPKG_LIBRARY_LINKAGE}" "dynamic" VCPKG_BUILD_SHARED_LIBS)
 
@@ -64,7 +61,7 @@ vcpkg_cmake_install()
 
 vcpkg_copy_pdbs()
 
-vcpkg_cmake_config_fixup(PACKAGE_NAME unofficial-allegro5 CONFIG_PATH share/unofficial-allegro5)
+#vcpkg_cmake_config_fixup(PACKAGE_NAME unofficial-allegro5 CONFIG_PATH share/unofficial-allegro5)
 vcpkg_fixup_pkgconfig()
 
 file(REMOVE_RECURSE "${CURRENT_PACKAGES_DIR}/debug/share" "${CURRENT_PACKAGES_DIR}/debug/include")
